@@ -17,7 +17,7 @@
         <header class="bg-indigo-700 text-white sticky top-0 z-50 shadow-md">
             <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
                 <h1 class="text-xl font-bold tracking-wide flex items-center gap-2">
-                    <i class="fa-solid fa-shirt"></i> Seragam Sekolah
+                    <i class="fa-solid font-sharp fa-shirt"></i> Seragam Sekolah
                 </h1>
                 <button onclick="toggleCartModal()" class="relative bg-indigo-800 hover:bg-indigo-900 px-4 py-2 rounded-full flex items-center gap-2 transition">
                     <i class="fa-solid fa-cart-shopping"></i>
@@ -71,7 +71,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Kelas *</label>
-                        <input type="text" id="kelas" required placeholder="Contoh: X IPA 1" class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <input type="text" id="kelas" required placeholder="Contoh: X TEI A" class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                     </div>
                 </div>
 
@@ -101,7 +101,7 @@
                     <p class="font-bold flex items-center gap-1 mb-1">
                         <i class="fa-solid fa-store"></i> Alamat Toko / Tempat Pengambilan:
                     </p>
-                    <p>Taman Aster Blok A1 No 105</p>
+                    <p>Toko Seragam Sekolah, Jl. Pendidikan No. 45, Komplek Sekolah (Buka Senin-Sabtu, 08.00 - 15.00 WIB)</p>
                 </div>
 
                 <!-- Tombol Submit -->
@@ -122,9 +122,11 @@
 
     <!-- Script Logika -->
     <script>
-        const PHONE_NUMBER = "62811894193"; 
+        // CONFIG : Ganti nomor WA dan URL Google Apps Script kamu di sini
+        const PHONE_NUMBER = "62811894193"; // Format 628xxx (tanpa tanda +)
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwv-pJAQ6VDF4yf_ZkWVMMWsNgAk-o6-51HQjJfQkGRsJbjGtPV6vIk-wM4V0uKrKUR/exec";
 
+        // ID Produk disesuaikan agar unik (1 sampai 7)
         const products = [
             { id: 1, name: "SERAGAM PRAKTIKUM TKR WANITA", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/WhatsApp%20Image%202026-05-06%20at%2012.22.08.jpeg" },
             { id: 2, name: "SERAGAM PRAKTIKUM TKR LAKI-LAKI", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/WhatsApp%20Image%202026-05-06%20at%2012.22.07.jpeg" },
@@ -133,11 +135,12 @@
             { id: 5, name: "SERAGAM PRAKTIKUM TKJ WANITA", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/WERPACK%20TKJ%20PUTRI.jpeg" },
             { id: 6, name: "SERAGAM PRAKTIKUM TKJ LAKI-LAKI", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/WERPACK%20TKJ%20PUTRA.jpeg" },
             { id: 7, name: "SERAGAM OLAHRAGA", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/BAJU%20OLAHRAGA%202.png" },
-            { id: 8, name: "SERAGAM PRAKTIKUM ELIN WANITA", img: "https://raw.githubusercontent.com/hanif81ahmad-art/WebsiteKhususSeragam/main/Gemini_Generated_Image_3cu46w3cu46w3cu4.png" }
+            { id: 8, name: "SERAGAM PRAKTIKUM ELIN WANITA", img: "https://github.com/hanif81ahmad-art/WebsiteKhususSeragam/blob/main/Gemini_Generated_Image_3cu46w3cu46w3cu4.png?raw=true" }
         ];
 
         let cart = [];
 
+        // Render Produk ke Halaman
         function renderProducts() {
             const container = document.getElementById('product-list');
             container.innerHTML = products.map(p => `
@@ -168,6 +171,7 @@
             `).join('');
         }
 
+        // Tambah ke Keranjang
         function addToCart(productId) {
             const product = products.find(p => p.id === productId);
             const sizeSelect = document.getElementById(`size-${productId}`);
@@ -176,13 +180,14 @@
             cart.push({
                 ...product,
                 size: selectedSize,
-                cartId: Date.now()
+                cartId: Date.now() // ID unik item di keranjang
             });
 
             updateCartUI();
             alert(`${product.name} (Ukuran: ${selectedSize}) berhasil ditambahkan!`);
         }
 
+        // Update UI Keranjang
         function updateCartUI() {
             document.getElementById('cart-count').innerText = cart.length;
             const cartItemsContainer = document.getElementById('cart-items');
@@ -218,6 +223,7 @@
             modal.classList.toggle('hidden');
         }
 
+        // Handle Proses Checkout
         async function handleCheckout(e) {
             e.preventDefault();
 
@@ -230,12 +236,14 @@
             btnSubmit.disabled = true;
             btnSubmit.innerText = "Memproses...";
 
+            // Ambil data form
             const nama = document.getElementById('nama').value;
             const kelas = document.getElementById('kelas').value;
             const nohp = document.getElementById('nohp').value;
             const alamat = document.getElementById('alamat').value;
             const ekspedisi = document.getElementById('ekspedisi').value;
 
+            // Rangkum item pesanan
             const pesananDetail = cart.map((item, i) => `${i + 1}. ${item.name} (Ukuran: ${item.size})`).join('\n');
 
             const payload = {
@@ -247,7 +255,8 @@
                 pesanan: pesananDetail
             };
 
-            if (APPS_SCRIPT_URL) {
+            // 1. Kirim Data ke Google Spreadsheet via Apps Script
+            if (APPS_SCRIPT_URL && APPS_SCRIPT_URL !== "GANTI_DENGAN_URL_WEB_APP_APPS_SCRIPT_KAMU") {
                 try {
                     await fetch(APPS_SCRIPT_URL, {
                         method: "POST",
@@ -260,6 +269,7 @@
                 }
             }
 
+            // 2. Redirect ke WhatsApp
             const textWA = `*PESANAN SERAGAM BARU*\n` +
                 `----------------------------------\n` +
                 `*Nama:* ${nama}\n` +
@@ -273,15 +283,18 @@
 
             const waUrl = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(textWA)}`;
             
+            // Reset keranjang & form
             cart = [];
             updateCartUI();
             btnSubmit.disabled = false;
             btnSubmit.innerHTML = `<i class="fa-brands fa-whatsapp text-lg"></i> Checkout ke WhatsApp`;
             toggleCartModal();
 
+            // Buka WhatsApp di tab baru
             window.open(waUrl, '_blank');
         }
 
+        // Inisialisasi awal
         renderProducts();
     </script>
 </body>
