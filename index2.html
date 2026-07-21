@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katalog Seragam Sekolah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .product-card:hover { transform: translateY(-3px); transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+
+    <div>
+        <!-- Header / Navbar -->
+        <header class="bg-indigo-700 text-white sticky top-0 z-50 shadow-md">
+            <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+                <h1 class="text-xl font-bold tracking-wide flex items-center gap-2">
+                    <i class="fa-solid font-sharp fa-shirt"></i> Seragam Sekolah
+                </h1>
+                <button onclick="toggleCartModal()" class="relative bg-indigo-800 hover:bg-indigo-900 px-4 py-2 rounded-full flex items-center gap-2 transition">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="font-semibold text-sm">Keranjang</span>
+                    <span id="cart-count" class="bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Utama -->
+        <main class="max-w-6xl mx-auto px-4 py-8">
+            
+            <!-- Banner Informasi -->
+            <div class="bg-indigo-50 border-l-4 border-indigo-600 p-4 rounded-r-lg mb-8 shadow-sm">
+                <p class="text-sm text-indigo-900">
+                    <i class="fa-solid fa-circle-info mr-1"></i>
+                    Pilih produk seragam, tentukan ukuran, lalu isi form pemesanan untuk checkout ke WhatsApp.
+                </p>
+            </div>
+
+            <!-- Grid Produk -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="product-list">
+                <!-- Produk akan di-render melalui JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Keranjang & Form Checkout -->
+    <div id="cart-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h2 class="text-xl font-bold text-slate-800">Keranjang & Checkout</h2>
+                <button onclick="toggleCartModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- List Item di Keranjang -->
+            <div id="cart-items" class="my-4 divide-y divide-slate-100 max-h-48 overflow-y-auto">
+                <!-- Item diisi via JavaScript -->
+            </div>
+
+            <!-- Form Data Siswa -->
+            <form id="checkout-form" onsubmit="handleCheckout(event)" class="space-y-4 border-t pt-4">
+                <h3 class="font-semibold text-slate-700">Data Pemesan</h3>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Lengkap *</label>
+                        <input type="text" id="nama" required class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Kelas *</label>
+                        <input type="text" id="kelas" required placeholder="Contoh: X IPA 1" class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">No. WhatsApp *</label>
+                        <input type="tel" id="nohp" required placeholder="08123456789" class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Pilihan Ekspedisi *</label>
+                        <select id="ekspedisi" required class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <option value="">-- Pilih Pengiriman --</option>
+                            <option value="JNE">JNE</option>
+                            <option value="Wahana">Wahana</option>
+                            <option value="Ambil Sendiri">Ambil Sendiri di Toko</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Alamat Rumah Lengkap *</label>
+                    <textarea id="alamat" rows="2" required class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
+                </div>
+
+                <!-- Informasi Alamat Toko -->
+                <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
+                    <p class="font-bold flex items-center gap-1 mb-1">
+                        <i class="fa-solid fa-store"></i> Alamat Toko / Tempat Pengambilan:
+                    </p>
+                    <p>Toko Seragam Sekolah, Jl. Pendidikan No. 45, Komplek Sekolah (Buka Senin-Sabtu, 08.00 - 15.00 WIB)</p>
+                </div>
+
+                <!-- Tombol Submit -->
+                <button type="submit" id="btn-submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition">
+                    <i class="fa-brands fa-whatsapp text-lg"></i> Checkout ke WhatsApp
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer Hak Cipta -->
+    <footer class="bg-slate-900 text-slate-400 py-6 mt-12 border-t border-slate-800 text-center text-sm">
+        <div class="max-w-6xl mx-auto px-4">
+            <p>&copy; 2026 Hanif Ahmad Ariyadinoto. All Rights Reserved.</p>
+            <p class="text-xs text-slate-500 mt-1">Katalog Resmi Pemesanan Seragam Sekolah & Praktikum Siswa</p>
+        </div>
+    </footer>
+
+    <!-- Script Logika -->
+    <script>
+        // CONFIG : Ganti nomor WA dan URL Google Apps Script kamu di sini
+        const PHONE_NUMBER = "62811894193"; // Format 628xxx (tanpa tanda +)
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwv-pJAQ6VDF4yf_ZkWVMMWsNgAk-o6-51HQjJfQkGRsJbjGtPV6vIk-wM4V0uKrKUR/exec";
+
+        // ID Produk disesuaikan agar unik (1 sampai 7)
+        const products = [
+            { id: 1, name: "SERAGAM PRAKTIKUM TKR WANITA", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/WhatsApp%20Image%202026-05-06%20at%2012.22.08.jpeg" },
+            { id: 2, name: "SERAGAM PRAKTIKUM TKR LAKI-LAKI", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/WhatsApp%20Image%202026-05-06%20at%2012.22.07.jpeg" },
+            { id: 3, name: "SERAGAM PRAKTIKUM TSM WANITA", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/WhatsApp%20Image%202026-05-06%20at%2012.22.08%20(1).jpeg" },
+            { id: 4, name: "SERAGAM PRAKTIKUM TSM LAKI-LAKI", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/WhatsApp%20Image%202026-05-06%20at%2012.22.06.jpeg" },
+            { id: 5, name: "SERAGAM PRAKTIKUM TKJ WANITA", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/WERPACK%20TKJ%20PUTRI.jpeg" },
+            { id: 6, name: "SERAGAM PRAKTIKUM TKJ LAKI-LAKI", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/WERPACK%20TKJ%20PUTRA.jpeg" },
+            { id: 7, name: "SERAGAM OLAHRAGA", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/BAJU%20OLAHRAGA%202.png" }
+        ];
+
+        let cart = [];
+
+        // Render Produk ke Halaman
+        function renderProducts() {
+            const container = document.getElementById('product-list');
+            container.innerHTML = products.map(p => `
+                <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden product-card flex flex-col justify-between">
+                    <div>
+                        <div class="w-full h-80 bg-slate-100 flex items-center justify-center overflow-hidden border-b border-slate-100">
+                            <img src="${p.img}" alt="${p.name}" class="max-w-full max-h-full object-contain">
+                        </div>
+                        
+                        <div class="p-4">
+                            <h3 class="font-bold text-slate-800 text-lg mb-2">${p.name}</h3>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Pilih Ukuran:</label>
+                            <select id="size-${p.id}" class="w-full p-2 border rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none">
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                                <option value="XXXL">XXXL</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="p-4 pt-0">
+                        <button onclick="addToCart(${p.id})" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg flex items-center justify-center gap-2 transition text-sm">
+                            <i class="fa-solid fa-plus"></i> Tambah ke Keranjang
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Tambah ke Keranjang
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const sizeSelect = document.getElementById(`size-${productId}`);
+            const selectedSize = sizeSelect.value;
+
+            cart.push({
+                ...product,
+                size: selectedSize,
+                cartId: Date.now() // ID unik item di keranjang
+            });
+
+            updateCartUI();
+            alert(`${product.name} (Ukuran: ${selectedSize}) berhasil ditambahkan!`);
+        }
+
+        // Update UI Keranjang
+        function updateCartUI() {
+            document.getElementById('cart-count').innerText = cart.length;
+            const cartItemsContainer = document.getElementById('cart-items');
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `<p class="text-center text-slate-400 py-4 text-sm">Keranjang masih kosong.</p>`;
+                return;
+            }
+
+            cartItemsContainer.innerHTML = cart.map((item, index) => `
+                <div class="py-3 flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <img src="${item.img}" class="w-12 h-12 rounded object-cover">
+                        <div>
+                            <p class="font-semibold text-sm text-slate-800">${item.name}</p>
+                            <span class="inline-block bg-indigo-100 text-indigo-800 text-xs px-2 py-0.5 rounded font-bold">Ukuran: ${item.size}</span>
+                        </div>
+                    </div>
+                    <button onclick="removeFromCart(${index})" class="text-red-500 hover:text-red-700 text-sm p-1">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function toggleCartModal() {
+            const modal = document.getElementById('cart-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        // Handle Proses Checkout
+        async function handleCheckout(e) {
+            e.preventDefault();
+
+            if (cart.length === 0) {
+                alert("Keranjang kamu masih kosong!");
+                return;
+            }
+
+            const btnSubmit = document.getElementById('btn-submit');
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "Memproses...";
+
+            // Ambil data form
+            const nama = document.getElementById('nama').value;
+            const kelas = document.getElementById('kelas').value;
+            const nohp = document.getElementById('nohp').value;
+            const alamat = document.getElementById('alamat').value;
+            const ekspedisi = document.getElementById('ekspedisi').value;
+
+            // Rangkum item pesanan
+            const pesananDetail = cart.map((item, i) => `${i + 1}. ${item.name} (Ukuran: ${item.size})`).join('\n');
+
+            const payload = {
+                nama,
+                kelas,
+                nohp,
+                alamat,
+                ekspedisi,
+                pesanan: pesananDetail
+            };
+
+            // 1. Kirim Data ke Google Spreadsheet via Apps Script
+            if (APPS_SCRIPT_URL && APPS_SCRIPT_URL !== "GANTI_DENGAN_URL_WEB_APP_APPS_SCRIPT_KAMU") {
+                try {
+                    await fetch(APPS_SCRIPT_URL, {
+                        method: "POST",
+                        mode: "no-cors",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+                } catch (error) {
+                    console.error("Gagal mencatat ke Spreadsheet:", error);
+                }
+            }
+
+            // 2. Redirect ke WhatsApp
+            const textWA = `*PESANAN SERAGAM BARU*\n` +
+                `----------------------------------\n` +
+                `*Nama:* ${nama}\n` +
+                `*Kelas:* ${kelas}\n` +
+                `*No HP:* ${nohp}\n` +
+                `*Ekspedisi:* ${ekspedisi}\n` +
+                `*Alamat:* ${alamat}\n\n` +
+                `*Detail Pesanan:*\n${pesananDetail}\n` +
+                `----------------------------------\n` +
+                `Mohon diproses, terima kasih!`;
+
+            const waUrl = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(textWA)}`;
+            
+            // Reset keranjang & form
+            cart = [];
+            updateCartUI();
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = `<i class="fa-brands fa-whatsapp text-lg"></i> Checkout ke WhatsApp`;
+            toggleCartModal();
+
+            // Buka WhatsApp di tab baru
+            window.open(waUrl, '_blank');
+        }
+
+        // Inisialisasi awal
+        renderProducts();
+    </script>
+</body>
+</html>
