@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,20 +16,48 @@
         <!-- Header / Navbar -->
         <header class="bg-indigo-700 text-white sticky top-0 z-50 shadow-md">
             <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-                <h1 class="text-xl font-bold tracking-wide flex items-center gap-2">
-                    <i class="fa-solid font-sharp fa-shirt"></i> Seragam Sekolah
-                </h1>
-                <button onclick="toggleCartModal()" class="relative bg-indigo-800 hover:bg-indigo-900 px-4 py-2 rounded-full flex items-center gap-2 transition">
-                    <i class="fa-solid fa-cart-shopping"></i>
-                    <span class="font-semibold text-sm">Keranjang</span>
-                    <span id="cart-count" class="bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
-                </button>
+                <a href="#beranda" class="text-xl font-bold tracking-wide flex items-center gap-2">
+                    <i class="fa-solid fa-shirt"></i> Seragam Sekolah
+                </a>
+                <div class="flex items-center gap-3">
+                    <a href="#katalog" class="text-sm font-medium hover:text-indigo-200 transition hidden sm:inline-block">Katalog</a>
+                    <button onclick="toggleCartModal()" class="relative bg-indigo-800 hover:bg-indigo-900 px-4 py-2 rounded-full flex items-center gap-2 transition">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="font-semibold text-sm">Keranjang</span>
+                        <span id="cart-count" class="bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    </button>
+                </div>
             </div>
         </header>
 
-        <!-- Content Utama -->
-        <main class="max-w-6xl mx-auto px-4 py-8">
+        <!-- SECTION 1: Beranda / Landing Page (Selamat Datang) -->
+        <section id="beranda" class="bg-gradient-to-b from-indigo-700 via-indigo-600 to-slate-50 text-white py-16 px-4">
+            <div class="max-w-4xl mx-auto text-center space-y-6">
+                <span class="bg-indigo-800/60 text-indigo-100 text-xs font-semibold px-3 py-1 rounded-full border border-indigo-400/30">
+                    Pemesanan Praktis & Cepat
+                </span>
+                <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+                    Selamat Datang di Katalog Resmi Seragam Sekolah Kelas 10
+                </h1>
+                <p class="text-indigo-100 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+                    Temukan dan pesan seragam praktikum serta sekolah secara langsung tanpa ribet. Pilih ukuran, isi form, dan transaksi langsung via WhatsApp!
+                </p>
+                <div class="pt-4">
+                    <a href="#katalog" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-8 py-3.5 rounded-full shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-bag-shopping"></i> Lihat Katalog & Pesan
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: Content Utama / Katalog Produk -->
+        <main id="katalog" class="max-w-6xl mx-auto px-4 py-12">
             
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-800">Katalog Produk</h2>
+                <p class="text-sm text-slate-500">Pilih pakaian praktikum sesuai jurusan kamu.</p>
+            </div>
+
             <!-- Banner Informasi -->
             <div class="bg-indigo-50 border-l-4 border-indigo-600 p-4 rounded-r-lg mb-8 shadow-sm">
                 <p class="text-sm text-indigo-900">
@@ -126,7 +154,7 @@
         const PHONE_NUMBER = "62811894193"; // Format 628xxx (tanpa tanda +)
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwv-pJAQ6VDF4yf_ZkWVMMWsNgAk-o6-51HQjJfQkGRsJbjGtPV6vIk-wM4V0uKrKUR/exec";
 
-        // ID Produk disesuaikan agar unik (1 sampai 7)
+        // ID Produk disesuaikan agar unik (1 sampai 11)
         const products = [
             { id: 1, name: "SERAGAM PRAKTIKUM TKR WANITA", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/WhatsApp%20Image%202026-05-06%20at%2012.22.08.jpeg" },
             { id: 2, name: "SERAGAM PRAKTIKUM TKR LAKI-LAKI", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/WhatsApp%20Image%202026-05-06%20at%2012.22.07.jpeg" },
@@ -134,8 +162,11 @@
             { id: 4, name: "SERAGAM PRAKTIKUM TSM LAKI-LAKI", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/WhatsApp%20Image%202026-05-06%20at%2012.22.06.jpeg" },
             { id: 5, name: "SERAGAM PRAKTIKUM TKJ WANITA", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/WERPACK%20TKJ%20PUTRI.jpeg" },
             { id: 6, name: "SERAGAM PRAKTIKUM TKJ LAKI-LAKI", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/WERPACK%20TKJ%20PUTRA.jpeg" },
-            { id: 7, name: "SERAGAM OLAHRAGA", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/BAJU%20OLAHRAGA%202.png" },
-            { id: 8, name: "SERAGAM PRAKTIKUM ELIN WANITA", img: "https://github.com/hanif81ahmad-art/WebsiteKhususSeragam/blob/main/Gemini_Generated_Image_3cu46w3cu46w3cu4.png?raw=true" }
+            { id: 7, name: "SERAGAM PRAKTIKUM ELIN WANITA", img: "https://raw.githubusercontent.com/hanif81ahmad-art/WebsiteKhususSeragam/refs/heads/main/Teks%20paragraf%20Anda.png" },
+            { id: 8, name: "SERAGAM PRAKTIKUM ELIN LAKI-LAKI", img: "https://raw.githubusercontent.com/hanif81ahmad-art/WebsiteKhususSeragam/refs/heads/main/Desain%20tanpa%20judul.png" },
+            { id: 9, name: "SERAGAM PRAKTIKUM TP LAKI-LAKI DAN PEREMPUAN", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/werpack%20mesin.png" },
+            { id: 10, name: "SERAGAM PRAKTIKUM DPIB LAKI-LAKI DAN PEREMPUAN", img: "https://raw.githubusercontent.com/hanif81ahmad-art/WebsiteKhususSeragam/refs/heads/main/Gemini_Generated_Image_mp9y9gmp9y9gmp9y.png" },
+            { id: 11, name: "SERAGAM OLAHRAGA", img: "https://raw.githubusercontent.com/koperasisejahterasaciba-ops/gambar-baju/main/BAJU%20OLAHRAGA%202.png" }
         ];
 
         let cart = [];
