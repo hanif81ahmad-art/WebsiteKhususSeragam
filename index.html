@@ -55,7 +55,7 @@
             
             <div class="mb-8">
                 <h2 class="text-2xl font-bold text-slate-800">Katalog Produk</h2>
-                <p class="text-sm text-slate-500">Pilih pakaian praktikum sesuai jurusan kamu.</p>
+                <p class="text-sm text-slate-500">Lihat foto, nama barang, ukuran, dan harga dalam satu kartu. Pilih ukuran lalu langsung beli.</p>
             </div>
 
             <!-- Banner Informasi -->
@@ -67,7 +67,7 @@
             </div>
 
             <!-- Grid Produk -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="product-list">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6" id="product-list">
                 <!-- Produk akan di-render melalui JavaScript -->
             </div>
         </main>
@@ -422,41 +422,101 @@
         // Render Produk ke Halaman
         function renderProducts() {
             const container = document.getElementById('product-list');
+
             container.innerHTML = products.map(p => `
-                <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden product-card flex flex-col justify-between">
-                    <div>
-                        <div class="w-full h-80 bg-slate-100 flex items-center justify-center overflow-hidden border-b border-slate-100">
-                            <img src="${p.img}" alt="${p.name}" class="max-w-full max-h-full object-contain">
-                        </div>
-                        
-                        <div class="p-4">
-                            <h3 class="font-bold text-slate-800 text-lg mb-1">${p.name}</h3>
-                            <p id="price-${p.id}" class="text-emerald-600 font-extrabold text-lg mb-3">${getPrice(p, 'M')}</p>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Pilih Ukuran:</label>
-                            <select id="size-${p.id}" onchange="updateProductPrice(${p.id})" class="w-full p-2 border rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none">
-                                <option value="M">M</option>
-                                <option value="L">L</option>
-                                <option value="XL">XL</option>
-                                <option value="XXL">XXL</option>
-                                <option value="XXXL">XXXL</option>
-                                <option value="JUMBO">JUMBO</option>
-                            </select>
-                        </div>
+                <article class="product-card bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden flex flex-col h-full hover:shadow-xl">
+                    <div class="relative bg-slate-100 h-80 sm:h-96 flex items-center justify-center overflow-hidden">
+                        <img
+                            src="${p.img}"
+                            alt="${p.name}"
+                            loading="lazy"
+                            class="w-full h-full object-contain p-3"
+                        >
+                        <span class="absolute top-3 left-3 bg-indigo-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow">
+                            Siap Dipesan
+                        </span>
                     </div>
-                    <div class="p-4 pt-0">
-                        <button onclick="addToCart(${p.id})" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg flex items-center justify-center gap-2 transition text-sm">
-                            <i class="fa-solid fa-plus"></i> Tambah ke Keranjang
+
+                    <div class="p-5 flex flex-col flex-1">
+                        <h3 class="font-extrabold text-slate-900 text-lg leading-snug min-h-[3.5rem]">
+                            ${p.name}
+                        </h3>
+
+                        <div class="mt-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-bold text-slate-800 text-sm">Harga per Ukuran</h4>
+                                <span class="text-xs text-slate-400">Pilih saat membeli</span>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                ${Object.entries(p.priceBySize || { "M": p.price }).map(([size, price]) => `
+                                    <button
+                                        type="button"
+                                        onclick="selectSize(${p.id}, '${size}')"
+                                        id="size-btn-${p.id}-${size}"
+                                        class="size-option-${p.id} text-left border border-slate-200 rounded-xl px-3 py-2.5 bg-slate-50 hover:border-indigo-400 hover:bg-indigo-50 transition"
+                                    >
+                                        <div class="text-xs font-bold text-slate-500">${size}</div>
+                                        <div class="text-sm font-extrabold text-emerald-600">${price}</div>
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-3 rounded-xl bg-indigo-50 border border-indigo-100">
+                            <div class="text-xs text-indigo-600 font-semibold">Ukuran dipilih</div>
+                            <div class="flex items-center justify-between gap-2 mt-0.5">
+                                <span id="selected-size-${p.id}" class="font-extrabold text-indigo-900">M</span>
+                                <span id="price-${p.id}" class="font-extrabold text-emerald-600">${getPrice(p, 'M')}</span>
+                            </div>
+                        </div>
+
+                        <button
+                            onclick="addToCart(${p.id})"
+                            class="w-full mt-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-extrabold py-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow-sm"
+                        >
+                            <i class="fa-solid fa-cart-plus"></i>
+                            Beli Ukuran M
                         </button>
                     </div>
-                </div>
+                </article>
             `).join('');
+
+            // Set ukuran default M untuk semua produk.
+            products.forEach(p => selectSize(p.id, 'M'));
+        }
+
+        // Pilih ukuran langsung dari daftar harga.
+        function selectSize(productId, size) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const price = getPrice(product, size);
+            const selectedSizeEl = document.getElementById(`selected-size-${productId}`);
+            const priceEl = document.getElementById(`price-${productId}`);
+            const buyButton = document.querySelector(`[onclick="addToCart(${productId})"]`);
+
+            if (selectedSizeEl) selectedSizeEl.innerText = size;
+            if (priceEl) priceEl.innerText = price;
+            if (buyButton) buyButton.innerHTML = `<i class="fa-solid fa-cart-plus"></i> Beli Ukuran ${size}`;
+
+            document.querySelectorAll(`.size-option-${productId}`).forEach(btn => {
+                btn.classList.remove('border-indigo-500', 'bg-indigo-100', 'ring-2', 'ring-indigo-200');
+                btn.classList.add('border-slate-200', 'bg-slate-50');
+            });
+
+            const selectedBtn = document.getElementById(`size-btn-${productId}-${size}`);
+            if (selectedBtn) {
+                selectedBtn.classList.remove('border-slate-200', 'bg-slate-50');
+                selectedBtn.classList.add('border-indigo-500', 'bg-indigo-100', 'ring-2', 'ring-indigo-200');
+            }
         }
 
         // Tambah ke Keranjang
         function addToCart(productId) {
             const product = products.find(p => p.id === productId);
-            const sizeSelect = document.getElementById(`size-${productId}`);
-            const selectedSize = sizeSelect.value;
+            const selectedSizeEl = document.getElementById(`selected-size-${productId}`);
+            const selectedSize = selectedSizeEl ? selectedSizeEl.innerText : 'M';
             const finalPrice = getPrice(product, selectedSize);
 
             cart.push({
