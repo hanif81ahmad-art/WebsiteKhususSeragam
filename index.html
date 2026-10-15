@@ -266,7 +266,7 @@
                     "XXXL": "Rp 170.000",
                     "JUMBO": "Rp 180.000"
                 },
-                img: "https://raw.githubusercontent.com/hanif81ahmad-art/WebsiteKhususSeragam/refs/heads/main/Desain%20tanpa%20judul.png" 
+                img: "https://raw.githubusercontent.com/hanif81ahmad-art/WebsiteTokoBersahaja/refs/heads/main/Desain%20tanpa%20judul.png" 
             },
             { 
                 id: 9, 
@@ -567,6 +567,20 @@
             modal.classList.toggle('hidden');
         }
 
+        // Fungsi sapaan sesuai waktu
+        function getGreeting() {
+            const hour = new Date().getHours();
+            if (hour >= 5 && hour < 11) return "Selamat pagi";
+            if (hour >= 11 && hour < 15) return "Selamat siang";
+            if (hour >= 15 && hour < 18) return "Selamat sore";
+            return "Selamat malam";
+        }
+
+        // Fungsi parse harga (untuk menghitung total)
+        function parsePrice(priceStr) {
+            return parseInt(priceStr.replace(/[^\d]/g, '')) || 0;
+        }
+
         // Handle Proses Checkout
         async function handleCheckout(e) {
             e.preventDefault();
@@ -587,9 +601,19 @@
             const alamat = document.getElementById('alamat').value;
             const ekspedisi = document.getElementById('ekspedisi').value;
 
-            // Rangkum item pesanan (sudah termasuk harga)
-            const pesananDetail = cart.map((item, i) => `${i + 1}. ${item.name} (Ukuran: ${item.size}) - ${item.price}`).join('\n');
+            // Hitung total & format detail pesanan
+            let total = 0;
+            const detailPesanan = cart.map((item, i) => {
+                const harga = parsePrice(item.price);
+                total += harga;
+                return `*${i + 1}. ${item.name} - ${item.size}*\nJumlah : 1\nSubtotal : ${item.price}`;
+            }).join('\n━━━━━━━━━━━━━━━\n');
 
+            const totalFormatted = `Rp ${total.toLocaleString('id-ID')}`;
+            const greeting = getGreeting();
+
+            // Payload untuk Google Spreadsheet
+            const pesananDetail = cart.map((item, i) => `${i + 1}. ${item.name} (Ukuran: ${item.size}) - ${item.price}`).join('\n');
             const payload = {
                 nama,
                 kelas,
@@ -613,17 +637,34 @@
                 }
             }
 
-            // 2. Redirect ke WhatsApp
-            const textWA = `*PESANAN SERAGAM BARU*\n` +
-                `----------------------------------\n` +
-                `*Nama:* ${nama}\n` +
-                `*Kelas:* ${kelas}\n` +
-                `*No HP:* ${nohp}\n` +
-                `*Ekspedisi:* ${ekspedisi}\n` +
-                `*Alamat:* ${alamat}\n\n` +
-                `*Detail Pesanan:*\n${pesananDetail}\n` +
-                `----------------------------------\n` +
-                `Mohon diproses, terima kasih!`;
+            // 2. Format pesan WhatsApp
+            const textWA = 
+`╔══════════════════╗
+      *PEMESANAN SERAGAM*
+╚══════════════════╝
+${greeting}, saya ingin melakukan pemesanan seragam sekolah dengan detail berikut:
+
+📋 *DATA PEMBELI*
+━━━━━━━━━━━━━━━
+• Nama : ${nama}
+• Kelas : ${kelas}
+• No WA : ${nohp}
+• Alamat Rumah : ${alamat}
+• Pengiriman : ${ekspedisi}
+
+🏪 *ALAMAT TOKO*
+━━━━━━━━━━━━━━━
+Taman Aster Blok A1 No 105
+
+🛒 *DETAIL PESANAN*
+━━━━━━━━━━━━━━━
+${detailPesanan}
+━━━━━━━━━━━━━━━
+🚚 Ongkir : Rp0
+💰 *Total Pembayaran : ${totalFormatted}*
+━━━━━━━━━━━━━━━
+🙏 Mohon informasi lebih lanjut terkait proses pembayaran dan pengiriman.
+Terima kasih 🙏`;
 
             const waUrl = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(textWA)}`;
             
